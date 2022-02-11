@@ -20,11 +20,12 @@ class SiswaSeender extends Seeder
         {
             $jk = $faker->randomElement($array = array('male','female',));
             DB::table('siswas')->insert([
-                'nama' => $faker -> name,
-                'nilai' =>  $faker -> numberBetween,
+                'nama' =>  $faker -> name,
+                'nilai'=>  $faker -> numberBetween,
+                'asal' =>  $faker -> company,
                 'kota' =>  $faker -> city,
-                'kab' =>  $faker -> city,
-                'jk' =>  $jk,
+                'kab'  =>  $faker -> city,
+                'jk'   =>  $jk,
                
                 
             ]);

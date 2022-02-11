@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SiswaController;
-
+use Hexters\Ladmin\Routes\Ladmin;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,8 +19,15 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+Route::get('/home', [App\Http\Controllers\SiswaController::class, 'index'])->name('siswa');
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::resource('siswa',SiswaController::class);
-Route::get('/siswas', [App\Http\Controllers\SiswaController::class, 'index'])->name('siswa');
+
+
+Route::group(["prefix" => "siswa", "middleware" => ['auth']], function () {
+    Route::any('/', [\App\Http\Controllers\SiswaController::class, 'index'])->name('siswa');
+    Route::resource('siswa',SiswaController::class);
+    Route::get('/siswa', [App\Http\Controllers\SiswaController::class, 'index'])->name('siswa');
+    Route::get('test/create',[App\Http\Controllers\SiswaController::class,'create']);
+    Route::post('test/create',[App\Http\Controllers\SiswaController::class,'store']);
+});
 

@@ -12,13 +12,34 @@ class SiswaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
        
-        $data = Siswa::all();
-        $data = DB::table('siswas')->paginate(10);
-               
-        return view('siswa',compact('data'));
+        if($request->isMethod('post')){
+            $no = $request->input('no');
+            $data = DB::table('siswas')->selectRaw('nama, kota, kab, jk, nilai, case when nilai >= '.$no.' then "lolos" else "gagal" end as keterangan')->get();
+            
+            $data2= DB::table('siswas')->selectRaw('nilai, count(nilai) as jumlah_siswa')->groupBy('nilai')->orderBy ('nilai','asc')->get();
+            
+        
+            $data3 = DB::table('siswas')->selectRaw('nama, kota, kab, jk, nilai')->get();
+            $data4 = DB::table('siswas')->selectRaw('sum(case when nilai >= '.$no.' then 1 else 0 end ) as lolos, sum(case when nilai <= '.$no.' then 1 else 0 end ) as gagal')->get();
+        }else{
+            $data = DB::table('siswas')->selectRaw('nama, kota, kab, jk, nilai, case when nilai >= 70 then "lolos" else "gagal" end as keterangan')->get();
+        
+            $data2= DB::table('siswas')->selectRaw('nilai, count(nilai) as jumlah_siswa')->groupBy('nilai')->orderBy ('nilai','asc')->get();
+            
+        
+            $data3 = DB::table('siswas')->selectRaw('nama, kota, kab, jk, nilai')->get();
+            $data4 = DB::table('siswas')->selectRaw('sum(case when nilai >= 70 then 1 else 0 end ) as lolos, sum(case when nilai <= 70 then 1 else 0 end ) as gagal')->get();  
+        }
+        // dd($data);die();
+        return view('siswa',[
+            'data' => $data,
+            'data2' => $data2,
+            'data3' => $data3,
+            'data4' => $data4
+        ]);
        
         
     }
@@ -30,7 +51,7 @@ class SiswaController extends Controller
      */
     public function create()
     {
-        return view ('siswa.create');
+        return view ('test.create');   
     }
 
     /**
@@ -49,20 +70,11 @@ class SiswaController extends Controller
            'jk' => 'required',
            
        ]);
-       $siswa = Siswa::create([
-        'nama' => 'request',
-        'nilai' => 'request',
-        'kota' => 'request',
-        'kab' => 'request',
-        'jk' => 'request',
-       ]);
-       if($siswa){
-        //redirect dengan pesan sukses
-        return redirect()->route('siswa.index')->with(['success' => 'Data Berhasil Disimpan!']);
-    }else{
-        //redirect dengan pesan error
-        return redirect()->route('siswa.index')->with(['error' => 'Data Gagal Disimpan!']);
-    }
+       Siswa::create($request->all());
+    
+
+        return redirect()->route('siswa')
+                        ->with('success','Post created successfully.');
     }
 
     /**
@@ -73,7 +85,7 @@ class SiswaController extends Controller
      */
     public function show($id)
     {
-        //
+        // return view('siswa.show',compact('siswa'));
     }
 
     /**
