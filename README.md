@@ -9,5 +9,5 @@
 
 ## About Laravel
 
-1.harus versi php 8
+1.harus versi php 8<br>
 2.install composer
